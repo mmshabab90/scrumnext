@@ -70,3 +70,31 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes moveDots {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 80px 80px;
+  }
+}
+
+.animated-dotted-background {
+  background-color: black;
+  background-image: radial-gradient(#4a5568 1px, transparent 1px);
+  background-size: 30px 30px;
+  animation: moveDots 10s linear infinite;
+}
+
+@layer utilities {
+  .gradient-title {
+    @apply font-extrabold bg-gradient-to-br from-blue-500 via-teal-100 to-indigo-400 bg-clip-text tracking-tighter text-transparent pr-2 pb-2;
+  }
+}
+
+.wmde-markdown ul {
+  list-style-type: disc;
+  padding-left: 15px !important;
+  color: white;
+}

@@ -20,7 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className}`}>
+      <body className={`${inter.className} animated-dotted-background`}>
         <ClerkProvider appearance={{ baseTheme: dark }}>
           <ThemeProvider attribute="class" defaultTheme="dark">
             <Header />
