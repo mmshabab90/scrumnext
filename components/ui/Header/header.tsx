@@ -6,8 +6,11 @@ import React from "react";
 import { Button } from "../button";
 import UserMenu from "../User/user-menu";
 import UserLoading from "../User/user-loading";
+import { checkUser } from "@/lib/checkUser";
 
 export const Header = async () => {
+  await checkUser();
+  
   return (
     <header className="container mx-auto">
       <nav className="py-6 px-4 flex justify-between items-center">
