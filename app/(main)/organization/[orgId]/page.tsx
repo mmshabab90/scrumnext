@@ -2,7 +2,7 @@ import React from "react";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { getOrganization } from "@/actions/organizations";
-import OrgSwitcher from "./_components/orgnization-switcher";
+import OrgSwitcher from "../../../../components/shared/orgnization-switcher";
 
 type OrganizationPageProps = {
   params: Promise<{ orgId: string }>;

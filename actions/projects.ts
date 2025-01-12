@@ -2,9 +2,14 @@
 
 import { db } from "@/lib/prisma";
 import { auth, clerkClient } from "@clerk/nextjs/server";
-import { Project } from "@prisma/client";
 
-export async function createProject(data: Project) {
+export type ProjectData = {
+  name: string;
+  key: string;
+  description: string;
+}
+
+export async function createProject(data: ProjectData) {
   const { userId, orgId } = await auth();
 
   if (!userId) {
@@ -16,8 +21,9 @@ export async function createProject(data: Project) {
   }
 
   // Check if the user is an admin of the organization
+  const clerk = await clerkClient();
   const { data: membershipList } =
-    await (await clerkClient()).organizations.getOrganizationMembershipList({
+    await clerk.organizations.getOrganizationMembershipList({
       organizationId: orgId,
     });
 
@@ -45,7 +51,7 @@ export async function createProject(data: Project) {
   }
 }
 
-export async function getProject(projectId:string) {
+export async function getProject(projectId: string) {
   const { userId, orgId } = await auth();
 
   if (!userId || !orgId) {
