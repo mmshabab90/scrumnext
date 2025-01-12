@@ -7,6 +7,7 @@ import { useOrganization } from "@clerk/nextjs";
 import { deleteProject } from "@/actions/projects";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import "@/components/shared/CustomDialog";
 
 type DeleteProjectProps = {
   projectId: string;
@@ -17,27 +18,42 @@ export default function DeleteProject({ projectId }: DeleteProjectProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const [deleteModal, setDeleteModal] = useState(false);
 
   const isAdmin = membership?.role === "org:admin";
 
-  const handleDelete = async () => {
-    if (window.confirm("Are you sure you want to delete this project?")) {
-      deleteProject(projectId)
-        .then((res) => {
-          setLoading(true);
-          if (res.success) {
-            setLoading(false);
-            setError(null);
-            toast.success(`Project deleted successfully`);
-            router.refresh();
-          }
-        })
-        .catch((err) => {
+  const onDelete = async () => {
+    deleteProject(projectId)
+      .then((res) => {
+        setLoading(true);
+        if (res.success) {
           setLoading(false);
-          setError(err);
-          toast.error(err.message);
-        });
-    }
+          setError(null);
+          toast.success(`Project deleted successfully`);
+          router.refresh();
+        }
+      })
+      .catch((err) => {
+        setLoading(false);
+        setError(err);
+        toast.error(err.message);
+      });
+  };
+
+  const handleDelete = () => {
+    setDeleteModal(true);
+    const dialog = document.createElement("custom-dialog");
+    dialog.innerHTML = `
+      <span slot="title">Delete Project</span>
+      <span slot="body">Are you sure you want to delete this project?</span>
+    `;
+    dialog.addEventListener("confirm", () => {
+      onDelete();
+    });
+    dialog.addEventListener("cancel", () => {
+      setDeleteModal(false);
+    });
+    document.body.appendChild(dialog);
   };
 
   if (!isAdmin) return null;
