@@ -29,7 +29,7 @@ export default function DeleteProject({ projectId }: DeleteProjectProps) {
         if (res.success) {
           setLoading(false);
           setError(null);
-          toast.success(`Project deleted successfully`);
+          toast.success(`Project ${res.name} deleted successfully`);
           router.refresh();
         }
       })

@@ -4,7 +4,7 @@ import { db } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { Sprint, SprintStatus } from "@prisma/client";
 
-export async function createSprint(projectId: string, data:Sprint) {
+export async function createSprint(projectId: string, data:Sprint):Promise<Sprint> {
   const { userId, orgId } = await auth();
 
   if (!userId || !orgId) {
@@ -20,12 +20,12 @@ export async function createSprint(projectId: string, data:Sprint) {
     throw new Error("Project not found");
   }
 
-  const sprint = await db.sprint.create({
+  const sprint:Sprint = await db.sprint.create({
     data: {
       name: data.name,
       startDate: data.startDate,
       endDate: data.endDate,
-      status: "PLANNED",
+      status: "PLANNED" as SprintStatus,
       projectId: projectId,
     },
   });

@@ -1,8 +1,8 @@
 "use server";
 
 import { db } from "@/lib/prisma";
+import { ProjectType } from "@/prisma/types";
 import { auth, clerkClient } from "@clerk/nextjs/server";
-import { Project } from "@prisma/client";
 
 export type ProjectData = {
   name: string;
@@ -10,7 +10,7 @@ export type ProjectData = {
   description: string;
 }
 
-export async function createProject(data: ProjectData) {
+export async function createProject(data: ProjectData):Promise<ProjectType> {
   const { userId, orgId } = await auth();
 
   if (!userId) {
@@ -52,7 +52,7 @@ export async function createProject(data: ProjectData) {
   }
 }
 
-export async function getProject(projectId: string) {
+export async function getProject(projectId: string):Promise<ProjectType| null> {
   const { userId, orgId } = await auth();
 
   if (!userId || !orgId) {
@@ -69,7 +69,7 @@ export async function getProject(projectId: string) {
   }
 
   // Get project with sprints and organization
-  const project:Project = await db.project.findUnique({
+  const project:ProjectType = await db.project.findUnique({
     where: { id: projectId },
     include: {
       sprints: {
@@ -115,5 +115,5 @@ export async function deleteProject(projectId: string) {
     where: { id: projectId },
   });
 
-  return { success: true };
+  return { success: true, name: project.name };
 }

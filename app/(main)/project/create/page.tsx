@@ -46,7 +46,7 @@ export default function CreateProjectPage() {
 
     setLoading(true);
 
-    createProject(data)
+    await createProject(data)
       .then((res) => {
         router.push(`/project/${res.id}`);
         setLoading(false);
