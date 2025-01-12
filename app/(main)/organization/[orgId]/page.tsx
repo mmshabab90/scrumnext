@@ -3,6 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { getOrganization } from "@/actions/organizations";
 import OrgSwitcher from "../../../../components/shared/orgnization-switcher";
+import ProjectList from "./_components/project-list";
 
 type OrganizationPageProps = {
   params: Promise<{ orgId: string }>;
@@ -21,6 +22,7 @@ const OrganizationPage = async ({ params }: OrganizationPageProps) => {
   if (!organization) {
     return <div>Organization not found</div>;
   }
+  
 
   return (
     <div className="container mx-auto px-4">
@@ -30,7 +32,9 @@ const OrganizationPage = async ({ params }: OrganizationPageProps) => {
         </h1>
         <OrgSwitcher />
       </div>
-      <div className="mb-4"></div>
+      <div className="mb-4">
+        <ProjectList orgId={organization.id} />
+      </div>
       <div className="mt-8"></div>
     </div>
   );

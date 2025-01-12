@@ -9,8 +9,6 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   const { projectId } = await params;
   const project = await getProject(projectId);
 
-
-
   if (!project) {
     notFound();
   }

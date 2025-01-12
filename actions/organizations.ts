@@ -2,6 +2,7 @@
 
 import { db } from "@/lib/prisma";
 import { auth, clerkClient } from "@clerk/nextjs/server";
+import { Project } from "@prisma/client";
 
 export async function getOrganization(slug: string) {
   const { userId } = await auth();
@@ -54,19 +55,18 @@ export async function getProjects(orgId: string) {
   const user = await db.user.findUnique({
     where: { clerkUserId: userId },
   });
-
+  
   if (!user) {
     throw new Error("User not found");
   }
-
-  const projects = await db.project.findMany({
+  
+  const projects: Project[] = await db.project.findMany({
     where: { organizationId: orgId },
     orderBy: { createdAt: "desc" },
   });
-
+ 
   return projects;
 }
-
 export async function getUserIssues(userId:string) {
   const { orgId } = await auth();
 

@@ -1,6 +1,6 @@
 import { currentUser } from "@clerk/nextjs/server";
 import { db } from "@/lib/prisma";
-import { Prisma, User } from "@prisma/client";
+import { User } from "@prisma/client";
 
 export const checkUser = async () => {
   const user = await currentUser();

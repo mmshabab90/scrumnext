@@ -2,6 +2,7 @@
 
 import { db } from "@/lib/prisma";
 import { auth, clerkClient } from "@clerk/nextjs/server";
+import { Project } from "@prisma/client";
 
 export type ProjectData = {
   name: string;
@@ -68,7 +69,7 @@ export async function getProject(projectId: string) {
   }
 
   // Get project with sprints and organization
-  const project = await db.project.findUnique({
+  const project:Project = await db.project.findUnique({
     where: { id: projectId },
     include: {
       sprints: {
