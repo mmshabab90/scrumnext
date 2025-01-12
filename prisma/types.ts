@@ -31,6 +31,8 @@ export type UserType = {
     project: ProjectType;
     projectId: string;
     issues: IssueType[];
+    createdAt: Date;
+    updatedAt: Date;
   };
   
   export type IssueType = {
@@ -38,11 +40,16 @@ export type UserType = {
     title: string;
     description?: string;
     status: IssueStatusType;
+    order: number;
     priority: IssuePriorityType;
-    reporter: UserType;
     assignee?: UserType;
-    sprint?: SprintType;
+    assigneeId?: string;
+    reporter: UserType;
+    reporterId: string;
     project: ProjectType;
+    projectId: string;
+    sprint?: SprintType;
+    sprintId?: string;
     createdAt: Date;
     updatedAt: Date;
   };
@@ -51,16 +58,19 @@ export type UserType = {
     PLANNED = 'PLANNED',
     IN_PROGRESS = 'IN_PROGRESS',
     COMPLETED = 'COMPLETED',
+    ACTIVE = "ACTIVE",
   }
   
   export enum IssueStatusType {
-    OPEN = 'OPEN',
+    TODO = 'TODO',
     IN_PROGRESS = 'IN_PROGRESS',
-    CLOSED = 'CLOSED',
+    IN_REVIEW = 'IN_REVIEW',
+    DONE = 'DONE',
   }
   
   export enum IssuePriorityType {
     LOW = 'LOW',
     MEDIUM = 'MEDIUM',
     HIGH = 'HIGH',
+    URGENT = 'URGENT',
   }

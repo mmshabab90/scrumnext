@@ -13,6 +13,8 @@ const OrganizationPage = async ({ params }: OrganizationPageProps) => {
   const { orgId } = await params;
   const { userId } = await auth();
 
+  console.log("userId", userId);
+
   if (!userId) {
     redirect("/sign-in");
   }
@@ -22,7 +24,6 @@ const OrganizationPage = async ({ params }: OrganizationPageProps) => {
   if (!organization) {
     return <div>Organization not found</div>;
   }
-  
 
   return (
     <div className="container mx-auto px-4">

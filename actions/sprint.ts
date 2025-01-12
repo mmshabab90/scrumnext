@@ -1,10 +1,10 @@
 "use server";
 
 import { db } from "@/lib/prisma";
+import { SprintStatusType, SprintType } from "@/prisma/types";
 import { auth } from "@clerk/nextjs/server";
-import { Sprint, SprintStatus } from "@prisma/client";
 
-export async function createSprint(projectId: string, data:Sprint):Promise<Sprint> {
+export async function createSprint(projectId: string, data:SprintType):Promise<SprintType> {
   const { userId, orgId } = await auth();
 
   if (!userId || !orgId) {
@@ -20,12 +20,12 @@ export async function createSprint(projectId: string, data:Sprint):Promise<Sprin
     throw new Error("Project not found");
   }
 
-  const sprint:Sprint = await db.sprint.create({
+  const sprint:SprintType = await db.sprint.create({
     data: {
       name: data.name,
       startDate: data.startDate,
       endDate: data.endDate,
-      status: "PLANNED" as SprintStatus,
+      status: "PLANNED" as SprintStatusType,
       projectId: projectId,
     },
   });
@@ -33,7 +33,7 @@ export async function createSprint(projectId: string, data:Sprint):Promise<Sprin
   return sprint;
 }
 
-export async function updateSprintStatus(sprintId: string, newStatus:SprintStatus) {
+export async function updateSprintStatus(sprintId: string, newStatus:SprintStatusType) {
   const { userId, orgId, orgRole } = await auth();
 
   if (!userId || !orgId) {
@@ -62,7 +62,7 @@ export async function updateSprintStatus(sprintId: string, newStatus:SprintStatu
     const startDate = new Date(sprint.startDate);
     const endDate = new Date(sprint.endDate);
 
-    if (newStatus === "ACTIVE" && (now < startDate || now > endDate)) {
+    if (newStatus === SprintStatusType.ACTIVE && (now < startDate || now > endDate)) {
       throw new Error("Cannot start sprint outside of its date range");
     }
 

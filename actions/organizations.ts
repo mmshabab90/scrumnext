@@ -1,8 +1,8 @@
 "use server";
 
 import { db } from "@/lib/prisma";
+import { IssueType, ProjectType, UserType } from "@/prisma/types";
 import { auth, clerkClient } from "@clerk/nextjs/server";
-import { Project } from "@prisma/client";
 
 export async function getOrganization(slug: string) {
   const { userId } = await auth();
@@ -60,7 +60,7 @@ export async function getProjects(orgId: string) {
     throw new Error("User not found");
   }
   
-  const projects: Project[] = await db.project.findMany({
+  const projects: ProjectType[] = await db.project.findMany({
     where: { organizationId: orgId },
     orderBy: { createdAt: "desc" },
   });
@@ -74,7 +74,7 @@ export async function getUserIssues(userId:string) {
     throw new Error("No user id or organization id found");
   }
 
-  const user = await db.user.findUnique({
+  const user:UserType = await db.user.findUnique({
     where: { clerkUserId: userId },
   });
 
@@ -82,7 +82,7 @@ export async function getUserIssues(userId:string) {
     throw new Error("User not found");
   }
 
-  const issues = await db.issue.findMany({
+  const issues:IssueType[] = await db.issue.findMany({
     where: {
       OR: [{ assigneeId: user.id }, { reporterId: user.id }],
       project: {
@@ -106,7 +106,7 @@ export async function getOrganizationUsers(orgId:string) {
     throw new Error("Unauthorized");
   }
 
-  const user = await db.user.findUnique({
+  const user:UserType = await db.user.findUnique({
     where: { clerkUserId: userId },
   });
 
@@ -123,7 +123,7 @@ export async function getOrganizationUsers(orgId:string) {
     (membership) => membership.publicUserData ? membership.publicUserData.userId : null
   );
 
-  const users = await db.user.findMany({
+  const users:UserType[] = await db.user.findMany({
     where: {
       clerkUserId: {
         in: userIds,

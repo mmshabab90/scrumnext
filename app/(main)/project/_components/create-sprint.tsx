@@ -19,9 +19,9 @@ import { DayPicker } from "react-day-picker";
 import { format, addDays } from "date-fns";
 
 import { sprintSchema } from "@/app/lib/validators";
-import { Sprint } from "@prisma/client";
 import { toast } from "sonner";
 import { createSprint } from "@/actions/sprint";
+import { SprintType } from "@/prisma/types";
 
 interface SprintCreationFormProps {
   projectTitle: string;
@@ -50,7 +50,7 @@ export default function SprintCreationForm({
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<Sprint>({
+  } = useForm<SprintType>({
     resolver: zodResolver(sprintSchema),
     defaultValues: {
       name: `${projectKey}-${sprintKey}`,
@@ -59,7 +59,7 @@ export default function SprintCreationForm({
     },
   });
 
-  const onSubmit = async (data: Sprint) => {
+  const onSubmit = async (data: SprintType) => {
     await createSprint(projectId, {
       ...data,
       startDate: dateRange.from,

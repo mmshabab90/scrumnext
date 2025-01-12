@@ -1,17 +1,17 @@
 "use server";
 
 import { db } from "@/lib/prisma";
+import { IssuePriorityType, IssueStatusType, IssueType,  UserType } from "@/prisma/types";
 import { auth } from "@clerk/nextjs/server";
-import { Issue, User } from "@prisma/client";
 
-export async function getIssuesForSprint(sprintId: string) {
+export async function getIssuesForSprint(sprintId: string):Promise<IssueType[]> {
   const { userId, orgId } = await auth();
 
   if (!userId || !orgId) {
     throw new Error("Unauthorized");
   }
 
-  const issues = await db.issue.findMany({
+  const issues:IssueType[] = await db.issue.findMany({
     where: { sprintId: sprintId },
     orderBy: [{ status: "asc" }, { order: "asc" }],
     include: {
@@ -23,23 +23,23 @@ export async function getIssuesForSprint(sprintId: string) {
   return issues;
 }
 
-export async function createIssue(projectId: string, data: Issue) {
+export async function createIssue(projectId: string, data: IssueType) {
   const { userId, orgId } = await auth();
 
   if (!userId || !orgId) {
     throw new Error("Unauthorized");
   }
 
-  const user:User = await db.user.findUnique({ where: { clerkUserId: userId } });
+  const user:UserType = await db.user.findUnique({ where: { clerkUserId: userId } });
 
-  const lastIssue = await db.issue.findFirst({
+  const lastIssue:IssueType = await db.issue.findFirst({
     where: { projectId, status: data.status },
     orderBy: { order: "desc" },
   });
 
   const newOrder = lastIssue ? lastIssue.order + 1 : 0;
 
-  const issue = await db.issue.create({
+  const issue: IssueType = await db.issue.create({
     data: {
       title: data.title,
       description: data.description,
@@ -48,7 +48,7 @@ export async function createIssue(projectId: string, data: Issue) {
       projectId: projectId,
       sprintId: data.sprintId,
       reporterId: user.id,
-      assigneeId: data.assigneeId || null, // Add this line
+      assigneeId: data.assigneeId,
       order: newOrder,
     },
     include: {
@@ -60,7 +60,7 @@ export async function createIssue(projectId: string, data: Issue) {
   return issue;
 }
 
-export async function updateIssueOrder(updatedIssues: Partial<Issue>[]) {
+export async function updateIssueOrder(updatedIssues: IssueType[]) {
   const { userId, orgId } = await auth();
 
   if (!userId || !orgId) {
@@ -91,7 +91,7 @@ export async function deleteIssue(issueId: string) {
     throw new Error("Unauthorized");
   }
 
-  const user = await db.user.findUnique({
+  const user:UserType = await db.user.findUnique({
     where: { clerkUserId: userId },
   });
 
@@ -99,7 +99,7 @@ export async function deleteIssue(issueId: string) {
     throw new Error("User not found");
   }
 
-  const issue = await db.issue.findUnique({
+  const issue:IssueType = await db.issue.findUnique({
     where: { id: issueId },
     include: { project: true },
   });
@@ -109,18 +109,17 @@ export async function deleteIssue(issueId: string) {
   }
 
   if (
-    issue.reporterId !== user.id &&
-    !issue.project.adminIds.includes(user.id)
+    issue.reporterId !== user.id
   ) {
     throw new Error("You don't have permission to delete this issue");
   }
 
   await db.issue.delete({ where: { id: issueId } });
 
-  return { success: true };
+  return { success: true, title: issue.title };
 }
 
-export async function updateIssue(issueId: string, data: Partial<Issue>) {
+export async function updateIssue(issueId: string, data: {status: IssueStatusType, priority:IssuePriorityType}):Promise<IssueType> {
   const { userId, orgId } = await auth();
 
   if (!userId || !orgId) {
@@ -128,7 +127,7 @@ export async function updateIssue(issueId: string, data: Partial<Issue>) {
   }
 
   try {
-    const issue = await db.issue.findUnique({
+    const issue:IssueType = await db.issue.findUnique({
       where: { id: issueId },
       include: { project: true },
     });
@@ -141,7 +140,7 @@ export async function updateIssue(issueId: string, data: Partial<Issue>) {
       throw new Error("Unauthorized");
     }
 
-    const updatedIssue = await db.issue.update({
+    const updatedIssue:IssueType = await db.issue.update({
       where: { id: issueId },
       data: {
         status: data.status,

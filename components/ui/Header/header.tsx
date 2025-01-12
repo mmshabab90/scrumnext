@@ -4,8 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { Button } from "../button";
-import UserMenu from "../User/user-menu";
-import UserLoading from "../User/user-loading";
+import UserMenu from "../../shared/User/user-menu";
+import UserLoading from "../../shared/User/user-loading";
 import { checkUser } from "@/lib/checkUser";
 
 export const Header = async () => {

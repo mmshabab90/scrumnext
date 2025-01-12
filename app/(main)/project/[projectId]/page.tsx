@@ -1,6 +1,7 @@
 import { getProject } from "@/actions/projects";
 import { notFound } from "next/navigation";
 import SprintCreationForm from "../_components/create-sprint";
+import SprintBoard from "../_components/sprint-board";
 
 type ProjectPageProps = {
   params: Promise<{ projectId: string }>;
@@ -9,8 +10,6 @@ type ProjectPageProps = {
 export default async function ProjectPage({ params }: ProjectPageProps) {
   const { projectId } = await params;
   const project = await getProject(projectId);
-
-  console.log(project);
 
   if (!project) {
     notFound();
@@ -25,7 +24,11 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         sprintKey={project.sprints?.length + 1}
       />
       {project.sprints.length > 0 ? (
-        <div>SprintBoard</div>
+       <SprintBoard
+          sprints={project.sprints}
+          projectId={projectId}
+          orgId={project.organizationId}
+        /> 
       ) : (
         <div>Create a Sprint from button above</div>
       )}
